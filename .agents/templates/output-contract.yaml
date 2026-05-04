@@ -1,0 +1,115 @@
+## Output Contract Template
+##
+## Defines the expected structure for each type of agent output.
+## Agents should follow these contracts to ensure consistency.
+
+contracts:
+
+  implementation_summary:
+    required_fields:
+      - summary
+      - files_changed
+      - code_changes_description
+      - tests_added_or_modified
+      - risks_or_assumptions
+      - follow_up_tasks
+    optional_fields:
+      - screenshots
+      - performance_notes
+      - breaking_changes
+
+  architecture_summary:
+    required_fields:
+      - overview
+      - components
+      - data_flow
+      - API_boundaries
+      - database_considerations
+      - security_considerations
+      - risks
+      - tradeoffs
+      - recommendation
+    optional_fields:
+      - diagrams
+      - scalability_notes
+      - migration_path
+
+  test_plan:
+    required_fields:
+      - scope
+      - unit_tests
+      - integration_tests
+      - edge_cases
+      - acceptance_criteria_coverage
+    optional_fields:
+      - regression_tests
+      - performance_tests
+      - accessibility_tests
+      - security_tests
+
+  risk_report:
+    required_fields:
+      - identified_risks
+      - severity
+      - likelihood
+      - mitigation_strategies
+      - residual_risks
+    optional_fields:
+      - risk_owner
+      - deadline
+      - related_tasks
+
+  decision_record:
+    required_fields:
+      - title
+      - status
+      - context
+      - options_considered
+      - decision
+      - consequences
+      - risks
+    optional_fields:
+      - date
+      - participants
+      - related_tasks
+      - supersedes
+
+  documentation_update:
+    required_fields:
+      - files_updated
+      - summary_of_changes
+      - new_sections_added
+    optional_fields:
+      - deprecated_sections
+      - glossary_updates
+      - related_decision_records
+
+  transcription_result:
+    required_fields:
+      - transcript_file_path
+      - raw_transcript
+      - cleaned_transcript
+      - short_summary
+      - action_items
+      - errors
+    optional_fields:
+      - detailed_summary
+      - decisions
+      - open_questions
+      - bugs
+      - requirements
+      - suggested_tickets
+      - participants
+
+  ticket_drafts:
+    required_fields:
+      - title
+      - description
+      - acceptance_criteria
+      - priority
+    optional_fields:
+      - labels
+      - dependencies
+      - subtasks
+      - assignee
+      - section_suggestion

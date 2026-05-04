@@ -1,0 +1,131 @@
+id: voice-note-to-ticket
+name: Voice Note to Development Ticket
+description: >
+  Converts a local audio recording into a transcript, then extracts development
+  requirements, bug reports, action items, and ticket drafts.
+
+trigger:
+  input:
+    - file_path
+    - optional_context
+    - mode
+
+flow:
+  - step: receive_audio_file
+    agent: orchestrator
+    description: Receive the audio file path and validate input
+    output:
+      - file_path
+      - validated_input
+
+  - step: transcribe_audio
+    agent: transcription-requirements
+    description: >
+      Convert audio to WAV, run local whisper-cpp, and read transcript
+    actions:
+      - extract_base_name
+      - prepare_output_directory
+      - convert_with_ffmpeg
+      - run_local_whisper
+      - cleanup_temp_wav
+      - read_transcript
+    commands:
+      prepare_directory: >
+        mkdir -p "/Users/borademircan/Documents/01-Work/Wonderfeel/cicd/dev/workspace/raw-data/transcriptions"
+      convert_audio: >
+        ffmpeg -y -i "${INPUT_FILE}" -ar 16000 -ac 1 -c:a pcm_s16le "${WAV_FILE}"
+      run_whisper: >
+        /opt/homebrew/opt/whisper-cpp/bin/whisper-cli
+        -m "/Users/borademircan/Library/Application Support/com.prakashjoshipax.VoiceInk/WhisperModels/ggml-large-v3-turbo-q5_0.bin"
+        -f "${WAV_FILE}"
+        -otxt
+        -of "${OUTPUT_PREFIX}"
+      cleanup: >
+        rm "${WAV_FILE}"
+    output:
+      - transcript_file_path
+      - raw_transcript
+
+  - step: extract_requirements
+    agent: transcription-requirements
+    description: >
+      Analyze the raw transcript and extract structured development artifacts
+    output:
+      - cleaned_transcript
+      - summary
+      - action_items
+      - decisions
+      - open_questions
+      - bugs
+      - requirements
+      - suggested_tickets
+
+  - step: plan_tasks
+    agent: product-technical-planner
+    description: >
+      Convert extracted requirements into prioritized, actionable tasks
+    input:
+      - requirements
+      - bugs
+      - suggested_tickets
+      - open_questions
+    output:
+      - prioritized_tasks
+      - acceptance_criteria
+      - dependencies
+      - risks
+
+  - step: route_work
+    agent: orchestrator
+    description: >
+      Assign tasks to the appropriate agents and create execution plan
+    input:
+      - prioritized_tasks
+      - acceptance_criteria
+      - dependencies
+      - risks
+    output:
+      - assigned_agents
+      - execution_plan
+
+  - step: document_results
+    agent: documentation-knowledge
+    description: >
+      Store transcript, meeting notes, and task summary in knowledge base
+    input:
+      - transcript_file_path
+      - summary
+      - decisions
+      - action_items
+      - execution_plan
+    output:
+      - knowledge_base_entry
+      - meeting_notes
+      - task_summary
+
+failure_handling:
+  ffmpeg_failure:
+    stop_workflow: true
+    message: >
+      ffmpeg conversion failed. Check file path and ffmpeg installation.
+
+  whisper_failure:
+    stop_workflow: true
+    message: >
+      Whisper transcription failed. Check whisper-cli path and model path.
+
+  missing_transcript:
+    stop_workflow: true
+    message: >
+      Whisper completed but transcript text file was not found.
+
+  cleanup_failure:
+    stop_workflow: false
+    message: >
+      Transcription completed, but temporary WAV cleanup failed.
+
+human_approval_required_for:
+  - creating external Asana/GitHub/Jira tickets
+  - deleting original audio files
+  - modifying repo files based on transcript
+  - committing changes

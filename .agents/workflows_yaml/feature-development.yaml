@@ -1,0 +1,176 @@
+id: feature-development
+name: Feature Development Workflow
+description: >
+  End-to-end workflow for building a new feature, from user request through
+  planning, architecture, implementation, review, and documentation.
+
+trigger:
+  input:
+    - user_request
+    - project_context
+    - constraints
+
+flow:
+  - step: receive_request
+    agent: orchestrator
+    description: Receive and analyze the user request
+    input:
+      - user_request
+      - project_context
+      - constraints
+    output:
+      - execution_plan
+      - assigned_agents
+      - dependency_map
+
+  - step: plan_feature
+    agent: product-technical-planner
+    description: Convert request into structured requirements and tasks
+    input:
+      - user_request
+      - project_context
+      - constraints
+    output:
+      - feature_brief
+      - user_stories
+      - acceptance_criteria
+      - implementation_plan
+      - task_breakdown
+      - risks
+      - dependencies
+
+  - step: review_architecture
+    agent: software-architect
+    description: Review and design the technical architecture
+    input:
+      - feature_brief
+      - implementation_plan
+      - existing_architecture
+    output:
+      - architecture_summary
+      - components
+      - data_flow
+      - API_boundaries
+      - database_considerations
+      - risks
+      - tradeoffs
+
+  - step: implement_feature
+    agent: fullstack-developer
+    description: Implement the feature end to end
+    input:
+      - task_breakdown
+      - implementation_plan
+      - architecture_summary
+      - acceptance_criteria
+      - coding_standards
+    output:
+      - implementation_summary
+      - files_changed
+      - code_changes
+      - test_notes
+      - risks_or_assumptions
+
+  - step: database_work
+    agent: database-data
+    condition: when database changes are needed
+    description: Design and implement database changes
+    input:
+      - feature_requirements
+      - existing_schema
+      - architecture_summary
+    output:
+      - schema_proposal
+      - migration_notes
+      - rollback_notes
+
+  - step: ai_integration_work
+    agent: ai-automation-integration
+    condition: when AI or integration work is needed
+    description: Design and implement AI/integration components
+    input:
+      - integration_request
+      - system_context
+      - data_flow_requirements
+    output:
+      - integration_plan
+      - API_contracts
+      - workflow_steps
+
+  - step: devops_work
+    agent: platform-devops
+    condition: when deployment or infrastructure changes are needed
+    description: Handle deployment and infrastructure requirements
+    input:
+      - deployment_request
+      - infrastructure_context
+    output:
+      - deployment_plan
+      - environment_variables
+      - monitoring_notes
+
+  - step: quality_review
+    agent: quality-testing-security
+    description: Review implementation for quality, security, and readiness
+    input:
+      - code_changes
+      - implementation_summary
+      - acceptance_criteria
+      - architecture_notes
+    output:
+      - pass_fail_status
+      - issues
+      - required_fixes
+      - test_plan
+      - security_notes
+      - final_readiness_score
+
+  - step: update_documentation
+    agent: documentation-knowledge
+    description: Update documentation and knowledge base
+    input:
+      - implementation_summary
+      - architecture_summary
+      - completed_tasks
+    output:
+      - documentation_updates
+      - knowledge_base_entries
+      - changelog_notes
+
+  - step: final_delivery
+    agent: orchestrator
+    description: Prepare and deliver final summary
+    input:
+      - all_step_outputs
+    output:
+      - final_summary
+      - follow_up_tasks
+
+outputs:
+  - execution_plan
+  - feature_brief
+  - architecture_summary
+  - implementation_summary
+  - test_plan
+  - documentation_updates
+  - final_summary
+
+failure_handling:
+  planning_failure:
+    stop_workflow: true
+    message: Feature planning could not be completed. Review requirements.
+  architecture_failure:
+    stop_workflow: true
+    message: Architecture review raised blocking concerns. Resolve before implementation.
+  implementation_failure:
+    stop_workflow: false
+    message: Implementation encountered issues. Review and retry.
+  review_failure:
+    stop_workflow: false
+    message: Quality review found issues. Fix required before delivery.
+
+human_approval_required_for:
+  - database migrations
+  - production deployments
+  - security-sensitive changes
+  - payment or auth logic changes

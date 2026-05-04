@@ -1,0 +1,110 @@
+id: architecture-review
+name: Architecture Review Workflow
+description: >
+  Workflow for evaluating a technical idea or proposal, considering
+  tradeoffs, and producing an architecture decision record.
+
+trigger:
+  input:
+    - technical_idea
+    - project_context
+    - constraints
+
+flow:
+  - step: define_context
+    agent: product-technical-planner
+    description: Clarify the technical context and requirements
+    input:
+      - technical_idea
+      - project_context
+      - constraints
+    output:
+      - feature_brief
+      - requirements
+      - open_questions
+
+  - step: evaluate_architecture
+    agent: software-architect
+    description: Evaluate options, tradeoffs, and produce recommendation
+    input:
+      - feature_brief
+      - existing_architecture
+      - constraints
+      - scalability_requirements
+    output:
+      - architecture_summary
+      - options_considered
+      - tradeoffs
+      - recommendation
+      - decision_record_draft
+      - risks
+
+  - step: database_review
+    agent: database-data
+    condition: when data model impact exists
+    description: Review data model implications
+    input:
+      - architecture_summary
+      - existing_schema
+    output:
+      - database_considerations
+      - schema_impact
+      - migration_risks
+
+  - step: devops_review
+    agent: platform-devops
+    condition: when infrastructure impact exists
+    description: Review infrastructure implications
+    input:
+      - architecture_summary
+      - infrastructure_context
+    output:
+      - infrastructure_impact
+      - deployment_considerations
+      - operational_risks
+
+  - step: quality_review
+    agent: quality-testing-security
+    description: Review security, performance, and quality implications
+    input:
+      - architecture_summary
+      - decision_record_draft
+    output:
+      - security_considerations
+      - performance_notes
+      - quality_risks
+
+  - step: document_decision
+    agent: documentation-knowledge
+    description: Finalize and store the architecture decision record
+    input:
+      - decision_record_draft
+      - architecture_summary
+      - tradeoffs
+      - recommendation
+    output:
+      - decision_record
+      - knowledge_base_entry
+      - documentation_updates
+
+outputs:
+  - architecture_summary
+  - options_considered
+  - tradeoffs
+  - recommendation
+  - decision_record
+  - risks
+
+failure_handling:
+  unclear_requirements:
+    stop_workflow: false
+    message: Requirements are unclear. Gather more context before deciding.
+  conflicting_constraints:
+    stop_workflow: false
+    message: Constraints conflict. Escalate to human for prioritization.
+
+human_approval_required_for:
+  - major architectural changes
+  - technology stack changes
+  - deprecation of existing systems
+  - new service boundaries

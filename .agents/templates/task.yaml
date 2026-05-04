@@ -1,0 +1,33 @@
+## Task Template
+##
+## Use this template when creating a new task for the agent team.
+
+id:                       # Unique task identifier
+title:                    # Short, descriptive title
+type:                     # feature | bug | improvement | research | devops | documentation
+priority:                 # critical | high | medium | low
+status:                   # backlog | planned | in_progress | in_review | done | blocked
+requested_by:             # Who requested this task
+assigned_agents:
+  -                       # List of agent IDs assigned to this task
+
+context: >
+                          # Background information and project context
+
+requirements:
+  -                       # What needs to be done
+
+acceptance_criteria:
+  -                       # Testable criteria for completion
+
+dependencies:
+  -                       # Other tasks or systems this depends on
+
+risks:
+  -                       # Known risks
+
+approval_required:        # true | false
+outputs:
+  -                       # Expected deliverables
+
+review_status:            # not_started | in_progress | approved | rejected

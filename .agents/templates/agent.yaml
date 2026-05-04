@@ -1,0 +1,37 @@
+## Agent Definition Template
+##
+## Use this template when creating a new agent.
+## Fill in all fields. Remove comments before use.
+
+id:                       # kebab-case identifier (e.g., my-new-agent)
+name:                     # Human-readable name (e.g., My New Agent)
+category:                 # Category (e.g., planning, implementation, review)
+type:                     # Type (e.g., planner, developer, reviewer)
+description: >
+                          # What this agent does and why it exists.
+
+role: >
+                          # Second-person role prompt. "You are..."
+
+responsibilities:
+  -                       # List of specific responsibilities
+
+inputs:
+  -                       # List of expected inputs
+
+outputs:
+  -                       # List of expected outputs
+
+collaborates_with:
+  -                       # List of agent IDs this agent works with
+
+escalation_rules:
+  -                       # When and to whom this agent escalates
+
+approval_required_for:
+  -                       # Actions that require human approval
+
+success_criteria:
+  -                       # How to determine if the agent succeeded
+
+default_output_format:    # markdown, yaml, json, etc.

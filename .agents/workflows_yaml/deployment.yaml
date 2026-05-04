@@ -1,0 +1,122 @@
+id: deployment
+name: Deployment Workflow
+description: >
+  Workflow for deploying a release candidate to production, including
+  environment checks, CI/CD validation, rollback planning, monitoring
+  setup, and human approval.
+
+trigger:
+  input:
+    - release_candidate
+    - environment
+    - deployment_notes
+
+flow:
+  - step: receive_deployment_request
+    agent: orchestrator
+    description: Receive deployment request and validate readiness
+    input:
+      - release_candidate
+      - environment
+      - deployment_notes
+    output:
+      - deployment_scope
+      - assigned_agents
+      - approval_checkpoints
+
+  - step: prepare_deployment
+    agent: platform-devops
+    description: Create deployment plan, environment checks, and rollback plan
+    input:
+      - release_candidate
+      - environment
+      - infrastructure_context
+    output:
+      - deployment_plan
+      - environment_checks
+      - ci_cd_status
+      - rollback_plan
+      - monitoring_plan
+      - operational_risks
+
+  - step: pre_deployment_review
+    agent: quality-testing-security
+    description: Final quality and security check before deployment
+    input:
+      - release_candidate
+      - deployment_plan
+      - test_results
+    output:
+      - pass_fail_status
+      - blocking_issues
+      - security_clearance
+      - final_readiness_score
+
+  - step: update_documentation
+    agent: documentation-knowledge
+    description: Prepare deployment documentation and changelog
+    input:
+      - deployment_plan
+      - release_candidate
+    output:
+      - deployment_notes
+      - changelog_notes
+      - runbook_updates
+
+  - step: human_approval
+    type: approval_checkpoint
+    description: >
+      Human must approve before proceeding to production deployment.
+      Review deployment plan, rollback plan, and readiness score.
+    required: true
+    approval_inputs:
+      - deployment_plan
+      - rollback_plan
+      - final_readiness_score
+      - blocking_issues
+
+  - step: execute_deployment
+    agent: platform-devops
+    description: Execute the deployment
+    input:
+      - approved_deployment_plan
+    output:
+      - deployment_status
+      - post_deployment_checks
+      - monitoring_status
+
+  - step: post_deployment_notes
+    agent: documentation-knowledge
+    description: Record post-deployment status and observations
+    input:
+      - deployment_status
+      - monitoring_status
+    output:
+      - post_deployment_summary
+      - follow_up_tasks
+
+outputs:
+  - deployment_plan
+  - rollback_plan
+  - deployment_status
+  - post_deployment_summary
+
+failure_handling:
+  environment_check_failure:
+    stop_workflow: true
+    message: Environment checks failed. Resolve before deployment.
+  ci_cd_failure:
+    stop_workflow: true
+    message: CI/CD pipeline failed. Fix before deployment.
+  deployment_failure:
+    stop_workflow: false
+    message: Deployment failed. Execute rollback plan.
+  approval_rejected:
+    stop_workflow: true
+    message: Human approval was not granted. Deployment cancelled.
+
+human_approval_required_for:
+  - all production deployments
+  - rollback execution
+  - environment variable changes in production
+  - post-deployment hotfixes

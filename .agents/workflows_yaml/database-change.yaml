@@ -1,0 +1,141 @@
+id: database-change
+name: Database Change Workflow
+description: >
+  Workflow for schema changes, migrations, and data operations with
+  proper review, rollback planning, and approval checkpoints.
+
+trigger:
+  input:
+    - data_request
+    - existing_schema
+    - constraints
+
+flow:
+  - step: receive_request
+    agent: orchestrator
+    description: Receive database change request and determine scope
+    input:
+      - data_request
+      - existing_schema
+      - constraints
+    output:
+      - execution_plan
+      - assigned_agents
+
+  - step: design_schema_change
+    agent: database-data
+    description: >
+      Design schema proposal, migration plan, and rollback strategy
+    input:
+      - data_request
+      - feature_requirements
+      - existing_schema
+      - migration_constraints
+    output:
+      - schema_proposal
+      - migration_notes
+      - SQL_queries
+      - index_recommendations
+      - data_validation_rules
+      - migration_risks
+      - rollback_notes
+
+  - step: architecture_review
+    agent: software-architect
+    condition: when architectural impact exists
+    description: Review architectural implications of schema changes
+    input:
+      - schema_proposal
+      - existing_architecture
+    output:
+      - architecture_impact
+      - risks
+      - recommendations
+
+  - step: implement_changes
+    agent: fullstack-developer
+    description: Implement application-level changes for new schema
+    input:
+      - schema_proposal
+      - migration_notes
+      - relevant_files
+    output:
+      - implementation_summary
+      - files_changed
+      - code_changes
+      - test_notes
+
+  - step: review_changes
+    agent: quality-testing-security
+    description: Review migration safety, data integrity, and security
+    input:
+      - schema_proposal
+      - migration_notes
+      - code_changes
+      - data_validation_rules
+    output:
+      - pass_fail_status
+      - issues
+      - security_notes
+      - data_integrity_notes
+      - final_readiness_score
+
+  - step: deployment_planning
+    agent: platform-devops
+    condition: when migration or deployment coordination is needed
+    description: Plan migration deployment and rollback
+    input:
+      - migration_notes
+      - rollback_notes
+      - deployment_context
+    output:
+      - deployment_plan
+      - rollback_plan
+      - approval_checklist
+
+  - step: human_approval
+    type: approval_checkpoint
+    description: >
+      Human must approve before executing database migration.
+      Review schema proposal, migration notes, and rollback plan.
+    required: true
+    approval_inputs:
+      - schema_proposal
+      - migration_notes
+      - rollback_notes
+      - migration_risks
+
+  - step: update_documentation
+    agent: documentation-knowledge
+    description: Document schema changes and migration
+    input:
+      - schema_proposal
+      - migration_notes
+      - implementation_summary
+    output:
+      - documentation_updates
+      - knowledge_base_entries
+
+outputs:
+  - schema_proposal
+  - migration_notes
+  - rollback_notes
+  - implementation_summary
+  - documentation_updates
+
+failure_handling:
+  migration_failure:
+    stop_workflow: true
+    message: Migration failed. Execute rollback plan immediately.
+  data_validation_failure:
+    stop_workflow: true
+    message: Data validation failed. Review data integrity before proceeding.
+  approval_rejected:
+    stop_workflow: true
+    message: Human approval was not granted. Migration cancelled.
+
+human_approval_required_for:
+  - all production schema changes
+  - destructive migrations
+  - data deletion or bulk updates
+  - irreversible cleanup scripts

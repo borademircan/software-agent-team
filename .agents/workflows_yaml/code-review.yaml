@@ -1,0 +1,107 @@
+id: code-review
+name: Code Review Workflow
+description: >
+  Workflow for reviewing code changes across correctness, security,
+  performance, accessibility, and deployment risk dimensions.
+
+trigger:
+  input:
+    - code_changes
+    - implementation_summary
+    - acceptance_criteria
+
+flow:
+  - step: receive_review_request
+    agent: orchestrator
+    description: Receive code changes and determine review scope
+    input:
+      - code_changes
+      - implementation_summary
+      - acceptance_criteria
+    output:
+      - review_scope
+      - assigned_reviewers
+      - review_dimensions
+
+  - step: quality_security_review
+    agent: quality-testing-security
+    description: Review correctness, security, performance, and accessibility
+    input:
+      - code_changes
+      - implementation_summary
+      - acceptance_criteria
+    output:
+      - pass_fail_status
+      - issues
+      - severity
+      - required_fixes
+      - suggested_improvements
+      - security_notes
+      - accessibility_notes
+      - performance_notes
+
+  - step: architecture_review
+    agent: software-architect
+    condition: when architectural impact exists
+    description: Review architectural implications of changes
+    input:
+      - code_changes
+      - architecture_notes
+    output:
+      - architecture_impact
+      - risks
+      - recommendations
+
+  - step: database_review
+    agent: database-data
+    condition: when schema or query impact exists
+    description: Review database-related changes
+    input:
+      - code_changes
+      - existing_schema
+    output:
+      - schema_impact
+      - query_performance_notes
+      - migration_risks
+
+  - step: devops_review
+    agent: platform-devops
+    condition: when deployment or runtime impact exists
+    description: Review deployment and runtime implications
+    input:
+      - code_changes
+      - infrastructure_context
+    output:
+      - deployment_impact
+      - operational_risks
+      - monitoring_notes
+
+  - step: update_documentation
+    agent: documentation-knowledge
+    description: Update documentation based on review findings
+    input:
+      - review_results
+      - code_changes
+    output:
+      - documentation_updates
+
+outputs:
+  - pass_fail_status
+  - issues
+  - required_fixes
+  - suggested_improvements
+  - final_readiness_score
+  - documentation_updates
+
+failure_handling:
+  critical_issues:
+    stop_workflow: false
+    message: Critical issues found. Required fixes must be addressed.
+  security_issues:
+    stop_workflow: true
+    message: Security issues found. Must be resolved before merge.
+
+human_approval_required_for:
+  - merging code with unresolved high-severity issues
+  - bypassing security review
+  - changes to auth, payment, or security logic

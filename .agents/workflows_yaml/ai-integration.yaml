@@ -1,0 +1,131 @@
+id: ai-integration
+name: AI Integration Workflow
+description: >
+  Workflow for designing and implementing AI/LLM integrations, API
+  connections, and workflow automation with proper safety controls.
+
+trigger:
+  input:
+    - integration_request
+    - system_context
+    - constraints
+
+flow:
+  - step: receive_request
+    agent: orchestrator
+    description: Receive integration request and determine scope
+    input:
+      - integration_request
+      - system_context
+      - constraints
+    output:
+      - execution_plan
+      - assigned_agents
+
+  - step: plan_integration
+    agent: product-technical-planner
+    description: Define integration goal, requirements, and acceptance criteria
+    input:
+      - integration_request
+      - system_context
+    output:
+      - integration_brief
+      - requirements
+      - acceptance_criteria
+      - risks
+
+  - step: design_integration
+    agent: ai-automation-integration
+    description: >
+      Design the integration including API contracts, workflow steps,
+      retry logic, idempotency, and human approval points
+    input:
+      - integration_brief
+      - API_docs
+      - auth_constraints
+      - data_flow_requirements
+    output:
+      - integration_plan
+      - API_contracts
+      - workflow_steps
+      - tool_definitions
+      - retry_error_handling
+      - security_considerations
+      - failure_modes
+      - human_approval_points
+
+  - step: architecture_review
+    agent: software-architect
+    condition: when system-wide impact exists
+    description: Review architectural impact of the integration
+    input:
+      - integration_plan
+      - existing_architecture
+    output:
+      - architecture_impact
+      - risks
+      - recommendations
+
+  - step: implement_integration
+    agent: fullstack-developer
+    description: Implement the integration
+    input:
+      - integration_plan
+      - API_contracts
+      - workflow_steps
+      - acceptance_criteria
+    output:
+      - implementation_summary
+      - files_changed
+      - code_changes
+      - test_notes
+
+  - step: review_integration
+    agent: quality-testing-security
+    description: Review integration for security, correctness, and readiness
+    input:
+      - code_changes
+      - implementation_summary
+      - security_considerations
+      - acceptance_criteria
+    output:
+      - pass_fail_status
+      - issues
+      - security_notes
+      - test_plan
+      - final_readiness_score
+
+  - step: update_documentation
+    agent: documentation-knowledge
+    description: Document the integration
+    input:
+      - integration_plan
+      - implementation_summary
+      - API_contracts
+    output:
+      - documentation_updates
+      - knowledge_base_entries
+
+outputs:
+  - integration_plan
+  - API_contracts
+  - implementation_summary
+  - test_plan
+  - documentation_updates
+
+failure_handling:
+  auth_failure:
+    stop_workflow: true
+    message: Authentication configuration failed. Review credentials and permissions.
+  api_contract_mismatch:
+    stop_workflow: false
+    message: API contract does not match expected schema. Review and update.
+  integration_test_failure:
+    stop_workflow: false
+    message: Integration tests failed. Review failure modes and retry logic.
+
+human_approval_required_for:
+  - external API actions that modify real data
+  - production automation deployment
+  - changes to authentication flows
+  - sending messages or creating tickets in external systems

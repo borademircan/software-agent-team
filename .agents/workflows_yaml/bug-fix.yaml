@@ -1,0 +1,100 @@
+id: bug-fix
+name: Bug Fix Workflow
+description: >
+  Workflow for investigating, fixing, and verifying a bug report,
+  from reproduction through fix, regression testing, and documentation.
+
+trigger:
+  input:
+    - bug_report
+    - project_context
+    - relevant_files
+
+flow:
+  - step: receive_bug_report
+    agent: orchestrator
+    description: Receive and triage the bug report
+    input:
+      - bug_report
+      - project_context
+    output:
+      - execution_plan
+      - assigned_agents
+      - priority
+
+  - step: plan_fix
+    agent: product-technical-planner
+    description: Analyze bug, plan reproduction, and define fix scope
+    input:
+      - bug_report
+      - technical_context
+    output:
+      - reproduction_steps
+      - root_cause_hypothesis
+      - fix_plan
+      - acceptance_criteria
+      - risks
+
+  - step: implement_fix
+    agent: fullstack-developer
+    description: Investigate root cause and implement the fix
+    input:
+      - fix_plan
+      - reproduction_steps
+      - relevant_files
+      - acceptance_criteria
+    output:
+      - implementation_summary
+      - files_changed
+      - code_changes
+      - test_notes
+      - risks_or_assumptions
+
+  - step: review_fix
+    agent: quality-testing-security
+    description: Review fix, run regression checks, verify acceptance criteria
+    input:
+      - code_changes
+      - implementation_summary
+      - acceptance_criteria
+      - test_notes
+    output:
+      - pass_fail_status
+      - issues
+      - regression_test_results
+      - security_notes
+      - final_readiness_score
+
+  - step: update_documentation
+    agent: documentation-knowledge
+    description: Document the fix and update knowledge base
+    input:
+      - implementation_summary
+      - root_cause_hypothesis
+      - fix_plan
+    output:
+      - documentation_updates
+      - changelog_notes
+      - knowledge_base_entries
+
+outputs:
+  - fix_plan
+  - implementation_summary
+  - regression_test_results
+  - documentation_updates
+
+failure_handling:
+  reproduction_failure:
+    stop_workflow: false
+    message: Bug could not be reproduced. Gather more information.
+  fix_failure:
+    stop_workflow: false
+    message: Fix implementation encountered issues. Review and retry.
+  regression_failure:
+    stop_workflow: true
+    message: Regression tests failed. Fix must be revised before delivery.
+
+human_approval_required_for:
+  - fixes involving auth, payment, or security logic
+  - database schema changes
+  - production deployments
