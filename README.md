@@ -45,8 +45,10 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/borademircan/software-ag
 ```
 
 **Next Steps**
-1. Type `/` in chat to see available workflows (slash commands).
-2. Use `@agent-name` to address specific agents.
+1. Copy and paste the following prompt to your Antigravity Agent in the chat to auto-register everything:
+   > "Please add AGENTS.md and GEMINI.md to my Workspace Rules, and add all files in .agents/workflows/ to my Workspace Workflows."
+2. Type `/` in chat to see available workflows (slash commands).
+3. Use `@agent-name` to address specific agents.
 
 ### Slash Commands
 
