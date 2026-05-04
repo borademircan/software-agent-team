@@ -45,11 +45,14 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/borademircan/software-ag
 ```
 
 **Next Steps**
-1. The script will attempt to automatically register workflows and rules by sending a message to your Antigravity agent. If this fails, you must do it manually:
-   - Go to the **Workflows** tab, click **+ Workspace**, type the workflow name (e.g. `feature-development`), press Enter, and then reference `@feature-development.md`.
-   - Go to the **Rules** tab, click **+ Workspace**, and add `AGENTS.md` and `GEMINI.md`.
-2. Type `/` in chat to see available workflows (slash commands).
-3. Use `@agent-name` to address specific agents.
+1. Go to the **Rules** tab, click **+ Workspace**, and add `AGENTS.md` and `GEMINI.md`.
+2. Go to the **Workflows** tab to add your slash commands. **You must add them one by one**:
+   - Click **+ Workspace**
+   - Type the exact command name (e.g., `feature-development`) and press Enter.
+   - Type `@` and select the matching file (e.g., `@feature-development.md`).
+3. Repeat step 2 for EVERY file in the `.agents/workflows/` directory (`help`, `bug-fix`, `code-review`, etc.)
+4. Type `/` in chat to see all your available workflows.
+5. Use `@agent-name` to address specific agents.
 
 ### Slash Commands
 
